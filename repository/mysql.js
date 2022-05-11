@@ -1,9 +1,9 @@
 let mysql      = require('mysql');
 let connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'admin',
-  password : 'adminmdp',
-  database : 'groupomania'
+  host     : process.env.HOST,
+  user     : process.env.USER,
+  password : process.env.PASSWORD,
+  database : process.env.DATABASE
 });
 
 connection.connect();
