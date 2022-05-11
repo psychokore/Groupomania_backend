@@ -9,8 +9,25 @@ exports.signup = async (req,res,next) => {
     if (!req.body.password || !req.body.email){
         return res.status(400).json({error: 'Missing fields'})
       }
+
+    let firstNameRegExp = new RegExp('^[A-Za-z éèëôîï-]+$', 'g');
+    let testFirstName = firstNameRegExp.test(req.body.firstname.value);
+    if (!testFirstName){
+        return res.status(400).json({error:'Veuillez saisir un prénom valide'})
+    }  
+    let lastNameRegExp = new RegExp('^[A-Za-z éèëôîï-]+$', 'g');
+    let testLastName = lastNameRegExp.test(req.body.lastname.value);
+    if (!testLastName){
+        return res.status(400).json({error:'Veuillez saisir un nom valide'})
+    }
+    let emailRegExp = new RegExp(
+        '^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.+-]+[.]{1}[a-z]{2,10}$', 'g'
+    );
+    let testEmail = emailRegExp.test(req.body.email.value);
+    if (!testEmail){
+        return res.status(400).json({error:'Veuillez saisir une adresse mail valide'})
+    }
     const email = cryptojs.SHA256(req.body.email).toString();
-    
     const password = await bcrypt.hash(req.body.password, 10);
     const user = {
         firstname: req.body.firstname,
