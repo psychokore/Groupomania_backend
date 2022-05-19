@@ -9,6 +9,7 @@ dotenv.config();
 
 
 const userRoutes = require('./routes/user');
+const publicationRoutes = require('./routes/publication');
 
 const app = express();
 
@@ -23,5 +24,6 @@ app.use((req, res, next) => {
   app.use(bodyParser.json());
 
   app.use('/api/auth', userRoutes);
+  app.use('/api/publication', publicationRoutes);
 
   module.exports = app;
