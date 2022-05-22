@@ -75,3 +75,14 @@ exports.login = async (req, res, next) => {
         })
         .catch(error => res.status(500).json({ error: 'Internal server error' }));
 };
+
+exports.refresh = (req, res) => {
+res.status(200).json({
+    userId: req.auth.userId,
+    token: jwt.sign(
+        { userId: req.auth.userId},
+        process.env.JWTOKEN,
+        { expiresIn: '1h'}
+    )
+});
+}
