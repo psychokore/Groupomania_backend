@@ -43,16 +43,18 @@ exports.modifyPublication = async (req, res) => {
             error: 'Ressource not found'
         })
     };
-    if (req.file) {
-        const filename = publication.imageUrl.split('/images/')[1];
-        fs.unlink(`images/${filename}`, () => {});
-    }
     const updated = {
         postid: req.params.id,
         content: publicationObject.content,
         imageurl: null
     };
+    if (req.file) {
+        const filename = publication.imageUrl.split('/images/')[1];
+        fs.unlink(`images/${filename}`, () => {});
+    }
     
+    const userId = req.auth.userId;
+
     const updatedPublication = await updatePublication(updated)
     if (updatedPublication === null){
         return res.status(500).json({error: "Internal server error"})
