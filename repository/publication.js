@@ -35,6 +35,26 @@ module.exports = {
                 return resolve(null)
             });
         })
+    },
+    updatePublication: async publication => {
+        return new Promise(resolve => {
+            conn.query('UPDATE publication SET ? WHERE postid = ? LIMIT 1', [publication], (err, results) => {
+                if (err){
+                    return resolve(null);
+                }
+                return resolve(results)
+            })
+        });
+    },
+    createPublication: async publication => {
+        return new Promise(resolve => {
+            conn.query('DELETE FROM publication WHERE postid = ? LIMIT 1', [publication], (err, results) => {
+                if (err){
+                    return resolve(null);
+                }
+                return resolve(results)
+            })
+        });
     }
 
 };
@@ -43,7 +63,16 @@ module.exports = {
 
 
 
+/*
+UPDATE publication 
+SET content = newcontent,
+    imageurl = newimageurl,
+WHERE postid = ? LIMIT 1  
+*/  
 
+/*
+DELETE FROM publication WHERE postid = ? LIMIT 1
+*/
 
 
 
