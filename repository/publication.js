@@ -46,7 +46,7 @@ module.exports = {
             })
         });
     },
-    createPublication: async publication => {
+    deletePublication: async publication => {
         return new Promise(resolve => {
             conn.query('DELETE FROM publication WHERE postid = ? LIMIT 1', [publication], (err, results) => {
                 if (err){
@@ -67,11 +67,11 @@ module.exports = {
 UPDATE publication 
 SET content = newcontent,
     imageurl = newimageurl,
-WHERE postid = ? LIMIT 1  
+WHERE postid = ? AND authorid = ? LIMIT 1  
 */  
 
 /*
-DELETE FROM publication WHERE postid = ? LIMIT 1
+DELETE FROM publication WHERE postid = ? and authorid = ? LIMIT 1
 */
 
 
