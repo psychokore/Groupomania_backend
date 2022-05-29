@@ -8,7 +8,6 @@ const publicationCtrl = require('../controllers/publication');
 
 router.get('/', auth, publicationCtrl.getAllPublications);
 router.post('/', auth, multer, publicationCtrl.publish);
-router.get('/:id', auth, publicationCtrl.getOnePublicationByPostId);
 router.put('/:id', auth, multer, publicationCtrl.modifyPublication);
 router.delete('/:id', auth, publicationCtrl.deletePublication);
 

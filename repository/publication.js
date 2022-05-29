@@ -14,9 +14,9 @@ module.exports = {
             })
         });
     },
-    getAllPublications: async publication => {
+    getAllPublications: async () => {
         return new Promise (resolve => {
-            conn.query('SELECT p.postid, p.content, p.imageurl, p.create_at, CONCAT (u.firstname, u.lastname) AS authorpseudo FROM publication p JOIN `user` u ON p.authorid = u.userId',[publication], (err, results) => {
+            conn.query('SELECT p.postid, p.content, p.imageurl, p.create_at, CONCAT (u.firstname, u.lastname) AS authorpseudo FROM publication p JOIN `user` u ON p.authorid = u.userId',[], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
@@ -24,9 +24,9 @@ module.exports = {
         })
     });
     },
-    getOnePublicationByPostId: async postid => {
+    getOnePublicationByPostId: async (postid, userId) => {
         return new Promise (resolve => {
-            conn.query('SELECT p.postid, p.content, p.imageurl, p.create_at, CONCAT (u.firstname, u.lastname) AS authorpseudo FROM publication p JOIN `user` u ON p.authorid = u.userId WHERE postid = ? LIMIT 1', [postid], (err, results) => {
+            conn.query('SELECT p.postid, p.content, p.imageurl, p.create_at, CONCAT (u.firstname, u.lastname) AS authorpseudo FROM publication p JOIN `user` u ON p.authorid = u.userId WHERE postid = ? AND userId = ? LIMIT 1', [postid, userId], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
@@ -36,9 +36,9 @@ module.exports = {
             });
         })
     },
-    updatePublication: async publication => {
+    updatePublication: async (postid, userId) => {
         return new Promise(resolve => {
-            conn.query('UPDATE publication SET ? WHERE postid = ? LIMIT 1', [publication], (err, results) => {
+            conn.query('UPDATE publication SET ? WHERE postid = ? AND userId = ? LIMIT 1', [postid, userId], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
@@ -46,9 +46,9 @@ module.exports = {
             })
         });
     },
-    deletePublication: async publication => {
+    deletePublication: async (postid, userId) => {
         return new Promise(resolve => {
-            conn.query('DELETE FROM publication WHERE postid = ? LIMIT 1', [publication], (err, results) => {
+            conn.query('DELETE FROM publication WHERE postid = ? AND userId = ? LIMIT 1', [postid, userId], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
@@ -63,12 +63,7 @@ module.exports = {
 
 
 
-/*
-UPDATE publication 
-SET content = newcontent,
-    imageurl = newimageurl,
-WHERE postid = ? AND authorid = ? LIMIT 1  
-*/  
+ 
 
 /*
 DELETE FROM publication WHERE postid = ? and authorid = ? LIMIT 1

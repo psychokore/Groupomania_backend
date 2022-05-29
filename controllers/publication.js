@@ -37,7 +37,7 @@ exports.modifyPublication = async (req, res) => {
       imageurl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : { ...req.body };
 
-    const publication = await getOnePublicationByPostId(req.params.id);
+    const publication = await getOnePublicationByPostId(req.params.id, req.auth.userId);
     if (!publication) {
         return res.status(404).json({
             error: 'Ressource not found'
@@ -49,12 +49,12 @@ exports.modifyPublication = async (req, res) => {
         imageurl: null
     };
     if (req.file) {
+        if (publication.imageUrl){
         const filename = publication.imageUrl.split('/images/')[1];
         fs.unlink(`images/${filename}`, () => {});
+        }
     }
     
-    const userId = req.auth.userId;
-
     const updatedPublication = await updatePublication(updated)
     if (updatedPublication === null){
         return res.status(500).json({error: "Internal server error"})
@@ -73,13 +73,7 @@ exports.getAllPublications = async (req, res) => {
     await getAllPublications();
 }
 
-exports.getOnePublicationByPostId = async (req, res) => {
-    const postid = req.params.id;
-    const post = await getOnePublicationByPostId(postid);
-    if (!post) {
-        return res.status(404).json({error: 'No results'})
-    }
-}
+
 
 
 
