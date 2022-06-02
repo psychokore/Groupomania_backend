@@ -55,7 +55,17 @@ module.exports = {
                 return resolve(results)
             })
         });
-    }
+    },
+    getAndCountAllPublications: async (offset, limit) => {
+        return new Promise (resolve => {
+            conn.query('SELECT p.postid, p.content, p.imageurl, p.create_at, CONCAT (u.firstname, u.lastname) AS authorpseudo FROM publication p JOIN `user` u ON p.authorid = u.userId LIMIT <offset>, <number_of_records',[offset, limit], (err, results) => {
+                if (err){
+                    return resolve(null);
+                }
+                return resolve (results)
+        })
+    });
+    },
 
 };
 

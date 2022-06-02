@@ -1,7 +1,8 @@
 const { json } = require('express');
+const paginate = require("express-paginate");
 const fs = require('fs');
 const publication = require('../repository/publication');
-const {createPublication, getAllPublications, getOnePublicationByPostId, deletePublication, updatePublication} = require('../repository/publication');
+const {createPublication, getAllPublications, getOnePublicationByPostId, deletePublication, updatePublication, getAndCountAllPublications} = require('../repository/publication');
 
 exports.publish = async (req,res,next) => {
     if (!req.body.publication){
@@ -85,7 +86,19 @@ exports.deletePublication = async (req, res) => {
 };
 
 exports.getAllPublications = async (req, res) => {
-    await getAllPublications();
+
+    const limit = req.query.limit || 10;
+    const offset = req.offset;
+    allPublications = await getAndCountAllPublications (offset, limit)
+        .then((results) => {
+        const pageCount = Math.ceil(results.count / limit);
+        res.render("paginatedTable", {
+            data: results.rows,
+            pageCount,
+            pages: paginate.getArrayPages(req)
+                (3, pageCount, req.query.page),
+        });
+    });
 }
 
 
