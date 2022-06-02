@@ -66,8 +66,23 @@ exports.modifyPublication = async (req, res) => {
 };
 
 exports.deletePublication = async (req, res) => {
+    const publication = await getOnePublicationByPostId(req.params.id, req.auth.userId);
+    if (!publication) {
+        return res.status(404).json({
+            error: 'Ressource not found'
+        })
+    };
+    const filename = publication.imageUrl.split('/images/')[1];
+      fs.unlink(`images/${filename}`, () => {});
     
-}
+    const deletedPublication = await deletePublication(req.params.id, req.auth.userId);
+    if (deletePublication === null){
+        return res.status(500).json({error: "Internal server error"})
+    }
+    return res.status(201).json({message: 'Deleted post !'})
+
+
+};
 
 exports.getAllPublications = async (req, res) => {
     await getAllPublications();
