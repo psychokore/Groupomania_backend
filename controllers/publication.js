@@ -92,7 +92,7 @@ exports.getAllPublications = async (req, res) => {
     allPublications = await getAndCountAllPublications (offset, limit)
         .then((results) => {
         const pageCount = Math.ceil(results.count / limit);
-        res.render("paginatedTable", {
+        res.render("paginatedPublications", {
             data: results.rows,
             pageCount,
             pages: paginate.getArrayPages(req)
