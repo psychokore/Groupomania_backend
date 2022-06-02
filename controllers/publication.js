@@ -76,7 +76,7 @@ exports.deletePublication = async (req, res) => {
       fs.unlink(`images/${filename}`, () => {});
     
     const deletedPublication = await deletePublication(req.params.id, req.auth.userId);
-    if (deletePublication === null){
+    if (deletedPublication === null){
         return res.status(500).json({error: "Internal server error"})
     }
     return res.status(201).json({message: 'Deleted post !'})
