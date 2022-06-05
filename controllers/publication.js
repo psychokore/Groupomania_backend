@@ -2,7 +2,7 @@ const { json } = require('express');
 const paginate = require("express-paginate");
 const fs = require('fs');
 const publication = require('../repository/publication');
-const {createPublication, getAllPublications, getOnePublicationByPostId, deletePublication, updatePublication, getAndCountAllPublications} = require('../repository/publication');
+const {createPublication, getOnePublicationByPostId, deletePublication, updatePublication, getAllPublicationsPaginated, getCount} = require('../repository/publication');
 
 exports.publish = async (req,res,next) => {
     if (!req.body.publication){
@@ -73,32 +73,34 @@ exports.deletePublication = async (req, res) => {
             error: 'Ressource not found'
         })
     };
-    const filename = publication.imageUrl.split('/images/')[1];
-      fs.unlink(`images/${filename}`, () => {});
+    if (publication.imageUrl){
+        const filename = publication.imageUrl.split('/images/')[1];
+        fs.unlink(`images/${filename}`, () => {});
+    };
     
     const deletedPublication = await deletePublication(req.params.id, req.auth.userId);
     if (deletedPublication === null){
         return res.status(500).json({error: "Internal server error"})
     }
-    return res.status(201).json({message: 'Deleted post !'})
+    return res.status(200).json({message: 'Deleted post !'})
 
 
 };
 
 exports.getAllPublications = async (req, res) => {
 
-    const limit = req.query.limit || 10;
-    const offset = req.offset;
-    allPublications = await getAndCountAllPublications (offset, limit)
-        .then((results) => {
-        const pageCount = Math.ceil(results.count / limit);
-        res.render("paginatedPublications", {
-            data: results.rows,
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = parseInt(req.query.offset) || 0;
+    const allPublications = await getAllPublicationsPaginated (offset*limit, limit)
+    const totalPublications = await getCount()
+    const pageCount = Math.ceil(totalPublications / limit);
+        res.status(200).json({
+            data: allPublications,
             pageCount,
-            pages: paginate.getArrayPages(req)
-                (3, pageCount, req.query.page),
-        });
-    });
+            pages: offset +1
+        });    
+        
+    
 }
 
 
