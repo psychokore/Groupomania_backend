@@ -1,4 +1,5 @@
 const express = require('express');
+const paginate = require("express-paginate");
 const bodyParser = require('body-parser');
 const path = require('path');
 const dotenv = require('dotenv');
@@ -9,6 +10,7 @@ dotenv.config();
 
 
 const userRoutes = require('./routes/user');
+const publicationRoutes = require('./routes/publication');
 
 const app = express();
 
@@ -23,5 +25,9 @@ app.use((req, res, next) => {
   app.use(bodyParser.json());
 
   app.use('/api/auth', userRoutes);
+  app.use('/api/publication', publicationRoutes);
+  app.use('/images', express.static(path.join(__dirname, 'images')));
+  
+  app.use(paginate.middleware(10, 50));
 
   module.exports = app;

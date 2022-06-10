@@ -66,8 +66,9 @@ exports.login = async (req, res, next) => {
             }
             return res.status(200).json({
                 userId: user.userId,
+                isAdmin: user.admin,
                 token: jwt.sign(
-                    { userId: user.userId},
+                    { userId: user.userId, isAdmin: user.admin},
                     process.env.JWTOKEN,
                     { expiresIn: '1h'}
                 )
@@ -75,3 +76,14 @@ exports.login = async (req, res, next) => {
         })
         .catch(error => res.status(500).json({ error: 'Internal server error' }));
 };
+
+exports.refresh = (req, res) => {
+res.status(200).json({
+    userId: req.auth.userId,
+    token: jwt.sign(
+        { userId: req.auth.userId},
+        process.env.JWTOKEN,
+        { expiresIn: '1h'}
+    )
+});
+}
