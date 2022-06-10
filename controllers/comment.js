@@ -82,6 +82,4 @@ exports.getAllComments = async (req, res) => {
             pageCount,
             pages: offset +1
         });    
-        
-    
-}
+};
