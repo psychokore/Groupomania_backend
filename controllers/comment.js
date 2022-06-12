@@ -7,13 +7,10 @@ exports.publish = async (req,res,next) => {
     if (!req.body.comment){
         return res.status(400).json({error: 'Missing fields'})
       }
-    const commentObject = JSON.parse(req.body.comment);
-    if (!commentObject.content){
-        return res.status(400).json({error: 'Missing fields'})
-      }
+
     const comment = {
         authorid: req.auth.userId,
-        content: commentObject.content,
+        content: req.body.comment,
         postid: req.params.id,
         create_at: new Date()
     };  
@@ -24,13 +21,14 @@ exports.publish = async (req,res,next) => {
         return res.status(500).json({error: "Internal server error"})
     }
     
-    return res.status(201).json({message: 'Published !'})
+    return res.status(201).json(newComment)
 };
 
 exports.modifyComment = async (req, res) => {
-    const commentObject = req.file ?
-    {...JSON.parse(req.body.comment)} : { ...req.body };
-
+    if (!req.body.comment){
+        return res.status(400).json({error: 'Missing fields'})
+      }
+    
     const comment = await getOneCommentByCommentId(req.params.id, req.auth.userId);
     if (!comment) {
         return res.status(404).json({
@@ -39,7 +37,7 @@ exports.modifyComment = async (req, res) => {
     };
     const updated = {
         commentid: req.params.id,
-        content: commentObject.content,
+        content: req.body.comment,
     };
     
     const updatedComment = await updateComment(updated)
@@ -73,8 +71,8 @@ exports.getAllComments = async (req, res) => {
 
     const limit = parseInt(req.query.limit) || 10;
     const offset = parseInt(req.query.offset) || 0;
-    const allComments = await getAllCommentsPaginated (offset*limit, limit)
-    const totalComments = await getCount()
+    const allComments = await getAllCommentsPaginated (req.params.id, offset*limit, limit)
+    const totalComments = await getCount(req.params.id)
     const pageCount = Math.ceil(totalComments / limit);
         res.status(200).json({
             data: allComments,

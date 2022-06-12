@@ -32,9 +32,9 @@ module.exports = {
             })
         });
     },
-    getAllCommentsPaginated: async (offset, limit) => {
+    getAllCommentsPaginated: async (postid, offset, limit) => {
         return new Promise (resolve => {
-            conn.query('SELECT c.commentid, c.content, c.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM comment c JOIN `user` u ON c.authorid = u.userId LIMIT ?, ?',[offset, limit], (err, results) => {
+            conn.query('SELECT c.commentid, c.content, c.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM comment c JOIN `user` u ON c.authorid = u.userId WHERE postid = ? LIMIT ?, ?',[postid, offset, limit], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
@@ -42,9 +42,9 @@ module.exports = {
         })
     });
     },
-    getCount: async () => {
+    getCount: async (postid) => {
         return new Promise (resolve => {
-            conn.query('SELECT COUNT(*) AS total FROM comment',[], (err, results) => {
+            conn.query('SELECT COUNT(*) AS total FROM comment WHERE postid = ? ',[postid], (err, results) => {
                 if (err){
                     return resolve(null);
                 }

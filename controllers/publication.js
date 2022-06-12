@@ -28,7 +28,7 @@ exports.publish = async (req,res,next) => {
         return res.status(500).json({error: "Internal server error"})
     }
     
-    return res.status(201).json({message: 'Published !'})
+    return res.status(201).json(newPublication)
 };
 
 exports.modifyPublication = async (req, res) => {

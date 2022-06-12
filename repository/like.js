@@ -32,16 +32,6 @@ module.exports = {
         })
     });
     },
-    getCount: async (postid) => {
-        return new Promise (resolve => {
-            conn.query('SELECT COUNT(*) AS total FROM publicationslike WHERE postid = ?',[postid], (err, results) => {
-                if (err){
-                    return resolve(null);
-                }
-                return resolve (results[0].total)
-        })
-    });
-    },
     getOneLikeByPostidAndUserid: async (postid, userId) => {
         return new Promise (resolve => {
             conn.query('SELECT l.userId CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publicationslike l JOIN `user` u ON l.userId = u.userId WHERE postid = ? AND userId = ? LIMIT 1', [postid, userId], (err, results) => {

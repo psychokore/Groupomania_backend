@@ -1,7 +1,7 @@
 const { json } = require('express');
 const paginate = require("express-paginate");
 const like = require('../repository/like');
-const {createLike, deleteLike, getAllLikeForOnePublication, getCount, getOneLikeByPostidAndUserid} = require('../repository/like');
+const {createLike, deleteLike, getAllLikeForOnePublication, getOneLikeByPostidAndUserid} = require('../repository/like');
 
 exports.addLike = async (req,res,next) => {
     const like = {
@@ -35,6 +35,5 @@ exports.deleteLike = async (req, res) => {
 
 exports.getAllLikes = async (req, res) => {
     const allLikes = await getAllLikeForOnePublication (req.params.id);
-    const totalLikes = await getCount(req.params.id);
-    return res.status(200).json({totalLikes})
+    return res.status(200).json(allLikes)
 }
