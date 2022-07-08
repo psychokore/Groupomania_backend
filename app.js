@@ -11,6 +11,8 @@ dotenv.config();
 
 const userRoutes = require('./routes/user');
 const publicationRoutes = require('./routes/publication');
+const commentRoutes = require('./routes/comment');
+const likeRoutes = require('./routes/like');
 
 const app = express();
 
@@ -26,6 +28,8 @@ app.use((req, res, next) => {
 
   app.use('/api/auth', userRoutes);
   app.use('/api/publication', publicationRoutes);
+  app.use('/api/comment', commentRoutes);
+  app.use('/api/like', likeRoutes);
   app.use('/images', express.static(path.join(__dirname, 'images')));
   
   app.use(paginate.middleware(10, 50));
