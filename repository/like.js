@@ -4,7 +4,7 @@ const conn = require('./mysql');
 module.exports = {
     createLike: async like => {
         return new Promise(resolve => {
-            conn.query('INSERT INTO publicationslike SET ?', [like], (err, results) => {
+            conn.query('INSERT INTO publications_like SET ?', [like], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
@@ -14,7 +14,7 @@ module.exports = {
     },
     deleteLike: async (postid, userId) => {
         return new Promise(resolve => {
-            conn.query('DELETE FROM publicationslike WHERE postid = ? AND userId = ? LIMIT 1', [postid, userId], (err, results) => {
+            conn.query('DELETE FROM publications_like WHERE postid = ? AND userId = ? LIMIT 1', [postid, userId], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
@@ -24,7 +24,7 @@ module.exports = {
     },
     getAllLikeForOnePublication: async (postid) => {
         return new Promise (resolve => {
-            conn.query('SELECT l.userId, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publicationsLike l JOIN `user` u ON l.userId = u.userId WHERE l.postid = ?',[postid], (err, results) => {
+            conn.query('SELECT l.userId, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publications_like l JOIN `user` u ON l.userId = u.userId WHERE l.postid = ?',[postid], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
@@ -34,7 +34,7 @@ module.exports = {
     },
     getOneLikeByPostidAndUserid: async (postid, userId) => {
         return new Promise (resolve => {
-            conn.query('SELECT l.userId CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publicationslike l JOIN `user` u ON l.userId = u.userId WHERE postid = ? AND userId = ? LIMIT 1', [postid, userId], (err, results) => {
+            conn.query('SELECT l.userId CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publications_like l JOIN `user` u ON l.userId = u.userId WHERE postid = ? AND userId = ? LIMIT 1', [postid, userId], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
