@@ -35,5 +35,6 @@ exports.deleteLike = async (req, res) => {
 
 exports.getAllLikes = async (req, res) => {
     const allLikes = await getAllLikeForOnePublication (req.params.id);
-    return res.status(200).json(allLikes)
+    return res.status(200).json({data: allLikes})
+    
 }
