@@ -8,13 +8,10 @@ exports.publish = async (req,res,next) => {
     if (!req.body.publication){
         return res.status(400).json({error: 'Missing fields'})
       }
-    const publicationObject = JSON.parse(req.body.publication);
-    if (!publicationObject.content){
-        return res.status(400).json({error: 'Missing fields'})
-      }
+    
     const publication = {
         authorid: req.auth.userId,
-        content: publicationObject.content,
+        content: req.body.publication.content,
         imageurl: null,
         create_at: new Date()
     };  

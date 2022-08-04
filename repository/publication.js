@@ -48,7 +48,7 @@ module.exports = {
     },
     getAllPublicationsPaginated: async (offset, limit) => {
         return new Promise (resolve => {
-            conn.query('SELECT p.postid, p.content, p.imageurl, p.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publication p JOIN `user` u ON p.authorid = u.userId LIMIT ?, ?',[offset, limit], (err, results) => {
+            conn.query('SELECT p.postid, p.content, p.imageurl, p.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publication p JOIN `user` u ON p.authorid = u.userId LIMIT ?, ? ',[offset, limit], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
