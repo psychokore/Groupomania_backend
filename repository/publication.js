@@ -3,18 +3,20 @@ const conn = require('./mysql');
 
 
 
-module.exports = {
-    createPublication: async publication => {
+module.exports = (() => {
+    const createPublication = async publication => {
+        
         return new Promise(resolve => {
-            conn.query('INSERT INTO publication SET ?', [publication], (err, results) => {
+            conn.query('INSERT INTO publication SET ?', [publication], async (err, results) => { 
                 if (err){
                     return resolve(null);
                 }
-                return resolve(results)
+                
+                return resolve(await getOnePublicationByPostId(results.insertId, publication.authorid))
             })
         });
-    },
-    getOnePublicationByPostId: async (postid, userId) => {
+    }
+    const getOnePublicationByPostId = async (postid, userId) => {
         return new Promise (resolve => {
             conn.query('SELECT p.postid, p.content, p.imageurl, p.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publication p JOIN `user` u ON p.authorid = u.userId WHERE postid = ? AND userId = ? LIMIT 1', [postid, userId], (err, results) => {
                 if (err){
@@ -25,8 +27,8 @@ module.exports = {
                 return resolve(null)
             });
         })
-    },
-    updatePublication: async (postid, userId) => {
+    }
+    const updatePublication= async (postid, userId) => {
         return new Promise(resolve => {
             conn.query('UPDATE publication SET ? WHERE postid = ? AND userId = ? LIMIT 1', [postid, userId], (err, results) => {
                 if (err){
@@ -35,8 +37,8 @@ module.exports = {
                 return resolve(results)
             })
         });
-    },
-    deletePublication: async (postid, userId) => {
+    }
+    const deletePublication= async (postid, userId) => {
         return new Promise(resolve => {
             conn.query('DELETE FROM publication WHERE postid = ? AND userId = ? LIMIT 1', [postid, userId], (err, results) => {
                 if (err){
@@ -45,18 +47,18 @@ module.exports = {
                 return resolve(results)
             })
         });
-    },
-    getAllPublicationsPaginated: async (offset, limit) => {
+    }
+    const getAllPublicationsPaginated= async (offset, limit) => {
         return new Promise (resolve => {
-            conn.query('SELECT p.postid, p.content, p.imageurl, p.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publication p JOIN `user` u ON p.authorid = u.userId LIMIT ?, ? ',[offset, limit], (err, results) => {
+            conn.query('SELECT p.postid, p.content, p.imageurl, p.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publication p JOIN `user` u ON p.authorid = u.userId ORDER BY p.create_at DESC LIMIT ?, ? ',[offset, limit], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
                 return resolve (results)
         })
     });
-    },
-    getCount: async () => {
+    }
+    const getCount= async () => {
         return new Promise (resolve => {
             conn.query('SELECT COUNT(*) AS total FROM publication',[], (err, results) => {
                 if (err){
@@ -66,4 +68,5 @@ module.exports = {
         })
     });
     }
-};
+    return {createPublication, getOnePublicationByPostId, updatePublication, deletePublication, getAllPublicationsPaginated, getCount}
+})()

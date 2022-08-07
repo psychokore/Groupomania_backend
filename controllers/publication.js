@@ -5,17 +5,18 @@ const publication = require('../repository/publication');
 const {createPublication, getOnePublicationByPostId, deletePublication, updatePublication, getAllPublicationsPaginated, getCount} = require('../repository/publication');
 
 exports.publish = async (req,res,next) => {
-    if (!req.body.publication){
+    if (!req.body.content){
         return res.status(400).json({error: 'Missing fields'})
       }
     
+
     const publication = {
         authorid: req.auth.userId,
-        content: req.body.publication.content,
+        content: req.body.content,
         imageurl: null,
         create_at: new Date()
     };  
-    if (req.file?.filename){
+    if (req.file){
         publication.imageurl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     }
     
