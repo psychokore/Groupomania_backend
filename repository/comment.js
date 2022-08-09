@@ -34,7 +34,7 @@ module.exports = {
     },
     getAllCommentsPaginated: async (postid, offset, limit) => {
         return new Promise (resolve => {
-            conn.query('SELECT c.commentid, c.content, c.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM comment c JOIN `user` u ON c.authorid = u.userId WHERE postid = ? LIMIT ?, ?',[postid, offset, limit], (err, results) => {
+            conn.query('SELECT c.commentid, c.content, c.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM comment c JOIN `user` u ON c.authorid = u.userId WHERE postid = ? ORDER BY c.create_at DESC LIMIT ?, ?',[postid, offset, limit], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
