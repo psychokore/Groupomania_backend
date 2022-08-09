@@ -34,7 +34,7 @@ module.exports = {
     },
     getOneLikeByPostidAndUserid: async (postid, userId) => {
         return new Promise (resolve => {
-            conn.query('SELECT l.userId CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publications_like l JOIN `user` u ON l.userId = u.userId WHERE postid = ? AND userId = ? LIMIT 1', [postid, userId], (err, results) => {
+            conn.query('SELECT l.userId, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publications_like l JOIN `user` u ON l.userId = u.userId WHERE l.postid = ? AND l.userId = ? LIMIT 1', [postid, userId], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
