@@ -28,9 +28,9 @@ module.exports = (() => {
             });
         })
     }
-    const updatePublication= async (postid, userId) => {
+    const updatePublication= async (updated, postid, userId) => {
         return new Promise(resolve => {
-            conn.query('UPDATE publication SET ? WHERE postid = ? AND userId = ? LIMIT 1', [postid, userId], (err, results) => {
+            conn.query('UPDATE publication SET ? WHERE postid = ? AND authorid = ? LIMIT 1', [updated, postid, userId], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
@@ -40,7 +40,7 @@ module.exports = (() => {
     }
     const deletePublication= async (postid, userId) => {
         return new Promise(resolve => {
-            conn.query('DELETE FROM publication WHERE postid = ? AND userId = ? LIMIT 1', [postid, userId], (err, results) => {
+            conn.query('DELETE FROM publication WHERE postid = ? AND authorid = ? LIMIT 1', [postid, userId], (err, results) => {
                 if (err){
                     return resolve(null);
                 }

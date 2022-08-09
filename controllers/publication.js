@@ -43,10 +43,11 @@ exports.modifyPublication = async (req, res) => {
         })
     };
     const updated = {
-        postid: req.params.id,
-        content: publicationObject.content,
+        
+        content: req.body.content,
         imageurl: null
     };
+    console.log(updated)
     if (req.file) {
         if (publication.imageUrl){
         const filename = publication.imageUrl.split('/images/')[1];
@@ -54,7 +55,8 @@ exports.modifyPublication = async (req, res) => {
         }
     }
     
-    const updatedPublication = await updatePublication(updated)
+    const updatedPublication = await updatePublication(updated, req.params.id, req.auth.userId)
+    console.log(updatedPublication)
     if (updatedPublication === null){
         return res.status(500).json({error: "Internal server error"})
     }
