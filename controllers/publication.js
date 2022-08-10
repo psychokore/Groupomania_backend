@@ -44,7 +44,7 @@ exports.modifyPublication = async (req, res) => {
     };
     const updated = {
         
-        content: req.body.content,
+        content: req.body.textUpdate,
         imageurl: null
     };
     console.log(updated)
