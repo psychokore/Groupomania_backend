@@ -7,5 +7,6 @@ const userCtrl = require('../controllers/user');
 router.post('/signup', userCtrl.signup);
 router.post('/login', userCtrl.login);
 router.get('/refresh', auth, userCtrl.refresh);
+router.get('/data', auth, userCtrl.getUserData);
 
 module.exports = router;

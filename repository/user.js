@@ -22,5 +22,17 @@ module.exports = {
                 return resolve(results)
             })
         }) 
+    },
+    findOneUserById: async userId => {
+        return new Promise(resolve => {
+            conn.query( 'SELECT email, firstname, lastname FROM user WHERE userId = ? LIMIT 1' , [userId], (err, results) => {
+                if (err){
+                    return resolve(null);
+                }
+                if (results.length === 1) 
+                    return resolve(results[0])   
+                return resolve(null)
+            });
+        })
     }
-};
+    };

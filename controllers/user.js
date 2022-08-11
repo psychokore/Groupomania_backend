@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cryptojs = require('crypto-js');
-const {findOneUserByMail, createUser} = require('../repository/user');
+const {findOneUserByMail, createUser, findOneUserById} = require('../repository/user');
 
 
 
@@ -86,4 +86,10 @@ res.status(200).json({
         { expiresIn: '1h'}
     )
 });
+}
+
+exports.getUserData = async (req, res) => {
+    const userData = await findOneUserById(req.auth.userId);
+    return res.status(200).json({userData});
+
 }
