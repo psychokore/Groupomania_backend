@@ -34,5 +34,15 @@ module.exports = {
                 return resolve(null)
             });
         })
+    },
+    deleteUser: async userId => {
+        return new Promise(resolve => {
+            conn.query('DELETE FROM user WHERE userId = ? LIMIT 1', [userId], (err, results) => {
+                if (err){
+                    return resolve(null);
+                }
+                return resolve(results)
+            })
+        });
     }
     };

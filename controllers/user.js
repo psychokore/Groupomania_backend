@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cryptojs = require('crypto-js');
-const {findOneUserByMail, createUser, findOneUserById} = require('../repository/user');
+const {findOneUserByMail, createUser, findOneUserById, deleteUser} = require('../repository/user');
 
 
 
@@ -90,6 +90,11 @@ res.status(200).json({
 
 exports.getUserData = async (req, res) => {
     const userData = await findOneUserById(req.auth.userId);
-    return res.status(200).json({userData});
+    return res.status(200).json({data: userData});
 
+}
+
+exports.deleteAccount = async (req, res) => {
+    const deleted = await deleteUser(req.auth.userId)
+    return res.status(200).json({message: 'Account deleted'})
 }
