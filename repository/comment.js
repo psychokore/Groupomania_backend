@@ -1,8 +1,17 @@
 const { resolve } = require('path');
 const conn = require('./mysql');
 
-/** module.exports = (() => {
-   
+module.exports = (() => {
+   const createComment= async comment => {
+        return new Promise(resolve => {
+            conn.query('INSERT INTO comment SET ?', [comment], async (err, results) => {
+                if (err){
+                    return resolve(null);
+                }
+                return resolve(await getOneCommentByCommentId(results.insertId, comment.authorid))
+            })
+        });
+    }
     const updateComment = async (commentid, userId) => {
         return new Promise(resolve => {
             conn.query('UPDATE comment SET ? WHERE commentid = ? AND userId = ? LIMIT 1', [commentid, userId], (err, results) => {
@@ -45,7 +54,7 @@ const conn = require('./mysql');
     }
     const getOneCommentByCommentId= async (commentid, userId) => {
         return new Promise (resolve => {
-            conn.query('SELECT c.postid, c.commentid, c.content, c.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM comment c JOIN `user` u ON c.authorid = u.userId WHERE commentid = ? AND userId = ? LIMIT 1', [commentid, postid, userId], (err, results) => {
+            conn.query('SELECT c.postid, c.commentid, c.content, c.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM comment c JOIN `user` u ON c.authorid = u.userId WHERE commentid = ? AND userId = ? LIMIT 1', [commentid, userId], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
@@ -58,19 +67,3 @@ const conn = require('./mysql');
 
     return {createComment, deleteComment, updateComment, getAllCommentsPaginated, getCount, getOneCommentByCommentId}
 })()
-
-*/
-
-module.exports = (() => {
-    const createComment= async comment => {
-        return new Promise(resolve => {
-            conn.query('INSERT INTO comment SET ?', [comment], (err, results) => {
-                if (err){
-                    return resolve(null);
-                }
-                return resolve(await getOneCommentByCommentId(results.insertId, comment.authorid))
-            })
-        });
-    }
-    return {createComment}
-})
