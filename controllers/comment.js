@@ -1,7 +1,4 @@
-const { json } = require('express');
-const paginate = require("express-paginate");
-const comment = require('../repository/comment');
-const {createComment, updateComment, deleteComment, getAllCommentsPaginated, getCount, getOneCommentByCommentId} = require('../repository/comment');
+const { createComment, updateComment, deleteComment, getAllCommentsPaginated, getCount, getOneCommentByCommentId } = require ('../repository/comment')
 
 exports.publish = async (req,res,next) => {
     if (!req.body.comment){

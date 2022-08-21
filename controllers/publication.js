@@ -1,7 +1,4 @@
-const { json } = require('express');
-const paginate = require("express-paginate");
 const fs = require('fs');
-const publication = require('../repository/publication');
 const {createPublication, getOnePublicationByPostId, deletePublication, updatePublication, getAllPublicationsPaginated, getCount} = require('../repository/publication');
 
 exports.publish = async (req,res,next) => {
