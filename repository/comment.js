@@ -12,9 +12,9 @@ module.exports = (() => {
             })
         });
     }
-    const updateComment = async (commentid, userId) => {
+    const updateComment = async (updated, commentid, userId) => {
         return new Promise(resolve => {
-            conn.query('UPDATE comment SET ? WHERE commentid = ? AND userId = ? LIMIT 1', [commentid, userId], (err, results) => {
+            conn.query('UPDATE comment SET ? WHERE commentid = ? AND authorid = ? LIMIT 1', [updated, commentid, userId], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
@@ -24,7 +24,7 @@ module.exports = (() => {
     }
     const deleteComment= async (commentid, userId) => {
         return new Promise(resolve => {
-            conn.query('DELETE FROM comment WHERE commentid = ? AND userId = ? LIMIT 1', [commentid, userId], (err, results) => {
+            conn.query('DELETE FROM comment WHERE commentid = ? AND authorid = ? LIMIT 1', [commentid, userId], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
@@ -34,7 +34,7 @@ module.exports = (() => {
     }
     const getAllCommentsPaginated= async (postid, offset, limit) => {
         return new Promise (resolve => {
-            conn.query('SELECT c.commentid, c.content, c.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM comment c JOIN `user` u ON c.authorid = u.userId WHERE postid = ? ORDER BY c.create_at DESC LIMIT ?, ?',[postid, offset, limit], (err, results) => {
+            conn.query('SELECT c.authorid, c.commentid, c.content, c.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM comment c JOIN `user` u ON c.authorid = u.userId WHERE postid = ? ORDER BY c.create_at DESC LIMIT ?, ?',[postid, offset, limit], (err, results) => {
                 if (err){
                     return resolve(null);
                 }

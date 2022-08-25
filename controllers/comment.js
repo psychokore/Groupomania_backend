@@ -22,7 +22,7 @@ exports.publish = async (req,res,next) => {
 };
 
 exports.modifyComment = async (req, res) => {
-    if (!req.body.comment){
+    if (!req.body.textUpdate){
         return res.status(400).json({error: 'Missing fields'})
       }
     
@@ -34,10 +34,10 @@ exports.modifyComment = async (req, res) => {
     };
     const updated = {
         commentid: req.params.id,
-        content: req.body.comment,
+        content: req.body.textUpdate,
     };
     
-    const updatedComment = await updateComment(updated)
+    const updatedComment = await updateComment(updated,req.params.id, req.auth.userId )
     if (updatedComment === null){
         return res.status(500).json({error: "Internal server error"})
     }
