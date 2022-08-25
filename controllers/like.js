@@ -9,13 +9,17 @@ exports.addLike = async (req,res,next) => {
         postid: req.params.id,
     };  
     
-    const newLike = await createLike(like);
-
-    if (newLike === null){
-        return res.status(500).json({error: "Internal server error"})
+    const alreadyLike = await getOneLikeByPostidAndUserid(req.params.id, req.auth.userId)
+    if (alreadyLike) {
+        return res.status(200).json({message: 'Post already liked'})
     }
-    
-    return res.status(201).json({message: 'Liked !'})
+    else {
+        const newLike = await createLike(like);
+        if (newLike === null){
+            return res.status(500).json({error: "Internal server error"})
+        }
+        return res.status(201).json({message: 'Liked !'}) 
+    }
 };
 
 exports.deleteLike = async (req, res) => {
