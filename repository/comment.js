@@ -74,6 +74,15 @@ module.exports = (() => {
             })
         });
     }
-
-    return {createComment, deleteComment, updateComment, getAllCommentsPaginated, getCount, getOneCommentByCommentId, deleteCommentByAdmin}
+    const updateCommentByAdmin = async (updated, commentid) => {
+        return new Promise(resolve => {
+            conn.query('UPDATE comment SET ? WHERE commentid = ?  LIMIT 1', [updated, commentid], (err, results) => {
+                if (err){
+                    return resolve(null);
+                }
+                return resolve(results)
+            })
+        });
+    }
+    return {createComment, deleteComment, updateComment, getAllCommentsPaginated, getCount, getOneCommentByCommentId, deleteCommentByAdmin, updateCommentByAdmin}
 })()
