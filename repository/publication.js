@@ -68,5 +68,25 @@ module.exports = (() => {
         })
     });
     }
-    return {createPublication, getOnePublicationByPostId, updatePublication, deletePublication, getAllPublicationsPaginated, getCount}
+    const deletePublicationByAdmin = async (postid) => {
+        return new Promise(resolve => {
+            conn.query('DELETE FROM publication WHERE postid = ? LIMIT 1', [postid], (err, results) => {
+                if (err){
+                    return resolve(null);
+                }
+                return resolve(results)
+            })
+        });
+    }
+    const updatePublicationByAdmin = async (updated, postid) => {
+        return new Promise(resolve => {
+            conn.query('UPDATE publication SET ? WHERE postid = ?  LIMIT 1', [updated, postid], (err, results) => {
+                if (err){
+                    return resolve(null);
+                }
+                return resolve(results)
+            })
+        });
+    }
+    return {createPublication, getOnePublicationByPostId, updatePublication, deletePublication, getAllPublicationsPaginated, getCount, deletePublicationByAdmin, updatePublicationByAdmin}
 })()

@@ -1,5 +1,6 @@
 const fs = require('fs');
-const {createPublication, getOnePublicationByPostId, deletePublication, updatePublication, getAllPublicationsPaginated, getCount} = require('../repository/publication');
+const {createPublication, getOnePublicationByPostId, deletePublication, updatePublication, getAllPublicationsPaginated, getCount, updatePublicationByAdmin, deletePublicationByAdmin} = require('../repository/publication');
+const { findOneAdminById } = require('../repository/user');
 
 exports.publish = async (req,res,next) => {
     if (!req.body.content){
@@ -34,53 +35,60 @@ exports.modifyPublication = async (req, res) => {
     } : { ...req.body };
 
     const publication = await getOnePublicationByPostId(req.params.id, req.auth.userId);
-    if (!publication) {
-        return res.status(404).json({
-            error: 'Ressource not found'
-        })
-    };
-    const updated = {
-        
+    const admin = await findOneAdminById(req.auth.userId);
+
+
+    if (publication || admin) {
+        const updated = {
         content: req.body.textUpdate,
         imageurl: null
-    };
-    console.log(updated)
-    if (req.file) {
-        if (publication.imageUrl){
-        const filename = publication.imageUrl.split('/images/')[1];
-        fs.unlink(`images/${filename}`, () => {});
+        };
+
+        if (req.file) {
+            if (publication.imageUrl){
+            const filename = publication.imageUrl.split('/images/')[1];
+            fs.unlink(`images/${filename}`, () => {});
+            }
         }
-    }
     
-    const updatedPublication = await updatePublication(updated, req.params.id, req.auth.userId)
-    console.log(updatedPublication)
-    if (updatedPublication === null){
-        return res.status(500).json({error: "Internal server error"})
-    }
+        const updatedPublication = await updatePublication(updated, req.params.id, req.auth.userId)
+        const updatedPublicationByAdmin = await updatePublicationByAdmin(updated, req.params.id)
+        
+        if (updatedPublication === null || updatedPublicationByAdmin=== null){
+            return res.status(500).json({error: "Internal server error"})
+        }
     
-    return res.status(201).json({message: 'Updated post !'})
+        return res.status(201).json({message: 'Updated post !'})
+    };
     
+    return res.status(404).json({
+            error: 'Ressource not found'
+    })
 
 };
 
 exports.deletePublication = async (req, res) => {
     const publication = await getOnePublicationByPostId(req.params.id, req.auth.userId);
-    if (!publication) {
-        return res.status(404).json({
-            error: 'Ressource not found'
-        })
-    };
-    if (publication.imageUrl){
-        const filename = publication.imageUrl.split('/images/')[1];
-        fs.unlink(`images/${filename}`, () => {});
+    const admin = await findOneAdminById(req.auth.userId);
+
+    if (publication || admin) {
+        if (publication.imageUrl){
+            const filename = publication.imageUrl.split('/images/')[1];
+            fs.unlink(`images/${filename}`, () => {});
+            };
+    
+        const deletedPublication = await deletePublication(req.params.id, req.auth.userId);
+        const deletedPublicationByAdmin = await deletePublicationByAdmin(req.params.id)
+
+        if (deletedPublication === null || deletedPublicationByAdmin === null){
+            return res.status(500).json({error: "Internal server error"})
+        }
+        return res.status(200).json({message: 'Deleted post !'}) 
     };
     
-    const deletedPublication = await deletePublication(req.params.id, req.auth.userId);
-    if (deletedPublication === null){
-        return res.status(500).json({error: "Internal server error"})
-    }
-    return res.status(200).json({message: 'Deleted post !'})
-
+    return res.status(404).json({
+            error: 'Ressource not found'
+        })
 
 };
 
