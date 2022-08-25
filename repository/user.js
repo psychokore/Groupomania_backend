@@ -44,5 +44,17 @@ module.exports = {
                 return resolve(results)
             })
         });
+    },
+    findOneAdminById: async userId => {
+        return new Promise(resolve => {
+            conn.query( 'SELECT email, firstname, lastname FROM user WHERE userId = ? AND admin = 1 LIMIT 1' , [userId], (err, results) => {
+                if (err){
+                    return resolve(null);
+                }
+                if (results.length === 1) 
+                    return resolve(results[0])   
+                return resolve(null)
+            });
+        })
     }
     };

@@ -64,6 +64,16 @@ module.exports = (() => {
             });
         })
     }
+    const deleteCommentByAdmin = async (commentid) => {
+        return new Promise(resolve => {
+            conn.query('DELETE FROM comment WHERE commentid = ? LIMIT 1', [commentid], (err, results) => {
+                if (err){
+                    return resolve(null);
+                }
+                return resolve(results)
+            })
+        });
+    }
 
-    return {createComment, deleteComment, updateComment, getAllCommentsPaginated, getCount, getOneCommentByCommentId}
+    return {createComment, deleteComment, updateComment, getAllCommentsPaginated, getCount, getOneCommentByCommentId, deleteCommentByAdmin}
 })()

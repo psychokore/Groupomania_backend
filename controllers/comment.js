@@ -1,4 +1,5 @@
-const { createComment, updateComment, deleteComment, getAllCommentsPaginated, getCount, getOneCommentByCommentId } = require('../repository/comment');
+const { createComment, updateComment, deleteComment, getAllCommentsPaginated, getCount, getOneCommentByCommentId, deleteCommentByAdmin } = require('../repository/comment');
+const { findOneAdminById } = require('../repository/user');
 
 exports.publish = async (req,res,next) => {
     if (!req.body.comment){
@@ -49,17 +50,20 @@ exports.modifyComment = async (req, res) => {
 
 exports.deleteComment = async (req, res) => {
     const comment = await getOneCommentByCommentId(req.params.id, req.auth.userId);
-    if (!comment) {
-        return res.status(404).json({
-            error: 'Ressource not found'
-        })
-    };
-    
-    const deletedComment = await deleteComment(req.params.id, req.auth.userId);
-    if (deletedComment === null){
+    const admin = await findOneAdminById(req.auth.userId);
+    if (comment || admin) {
+        const deletedComment = await deleteComment(req.params.id, req.auth.userId);
+    const deletedCommentByAdmin = await deleteCommentByAdmin(req.params.id)
+    if (deletedComment === null || deletedCommentByAdmin === null){
         return res.status(500).json({error: "Internal server error"})
     }
     return res.status(200).json({message: 'Deleted comment !'})
+    }
+    return res.status(404).json({
+        error: 'Ressource not found'
+    });
+    
+    
 
 
 };
