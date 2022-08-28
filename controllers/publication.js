@@ -34,7 +34,7 @@ exports.modifyPublication = async (req, res) => {
       imageurl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : { ...req.body };
 
-    const publication = await getOnePublicationByPostId(req.params.id, req.auth.userId);
+    const publication = await getOnePublicationByPostId(req.params.id);
     const admin = await findOneAdminById(req.auth.userId);
 
 
@@ -68,14 +68,14 @@ exports.modifyPublication = async (req, res) => {
 };
 
 exports.deletePublication = async (req, res) => {
-    const publication = await getOnePublicationByPostId(req.params.id, req.auth.userId);
+    const publication = await getOnePublicationByPostId(req.params.id);
     const admin = await findOneAdminById(req.auth.userId);
 
     if (publication || admin) {
         if (publication.imageUrl){
             const filename = publication.imageUrl.split('/images/')[1];
             fs.unlink(`images/${filename}`, () => {});
-            };
+            }
     
         const deletedPublication = await deletePublication(req.params.id, req.auth.userId);
         const deletedPublicationByAdmin = await deletePublicationByAdmin(req.params.id)

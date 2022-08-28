@@ -11,7 +11,7 @@ exports.addLike = async (req,res,next) => {
     
     const alreadyLike = await getOneLikeByPostidAndUserid(req.params.id, req.auth.userId)
     if (alreadyLike) {
-        return res.status(200).json({message: 'Post already liked'})
+        return res.status(403).json({message: 'Post already liked'})
     }
     else {
         const newLike = await createLike(like);

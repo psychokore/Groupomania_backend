@@ -16,9 +16,9 @@ module.exports = (() => {
             })
         });
     }
-    const getOnePublicationByPostId = async (postid, userId) => {
+    const getOnePublicationByPostId = async (postid) => {
         return new Promise (resolve => {
-            conn.query('SELECT p.postid, p.content, p.imageurl, p.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publication p JOIN `user` u ON p.authorid = u.userId WHERE postid = ? AND userId = ? LIMIT 1', [postid, userId], (err, results) => {
+            conn.query('SELECT p.postid, p.content, p.imageurl, p.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publication p JOIN `user` u ON p.authorid = u.userId WHERE postid = ? LIMIT 1', [postid], (err, results) => {
                 if (err){
                     return resolve(null);
                 }

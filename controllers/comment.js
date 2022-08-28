@@ -1,5 +1,4 @@
-const { createComment, updateComment, deleteComment, getAllCommentsPaginated, getCount, getOneCommentByCommentId, deleteCommentByAdmin, updateCommentByAdmin } = require('../repository/comment');
-const { findOneAdminById } = require('../repository/user');
+const { createComment, updateComment, deleteComment, getAllCommentsPaginated, getCount, getOneCommentByCommentId, deleteCommentByAdmin, updateCommentByAdmin } = require('../repository/comment'); 
 
 exports.publish = async (req,res,next) => {
     if (!req.body.comment){
@@ -28,19 +27,25 @@ exports.modifyComment = async (req, res) => {
       }
     
     const comment = await getOneCommentByCommentId(req.params.id, req.auth.userId);
-    const admin = await findOneAdminById(req.auth.userId);
+    
 
 
-    if (comment || admin) {
+    if (comment) {
         const updated = {
         commentid: req.params.id,
         content: req.body.textUpdate,
         };
-    
-        const updatedComment = await updateComment(updated, req.params.id, req.auth.userId )
-        const updatedCommentByAdmin = await updateCommentByAdmin(updated, req.params.id)
 
-        if (updatedComment === null || updatedCommentByAdmin === null){
+        let updatedComment = null
+        if (req.auth.isAdmin) {
+            updatedComment = await updateCommentByAdmin(updated, req.params.id) 
+        } else {
+            updatedComment = await updateComment(updated, req.params.id, req.auth.userId )
+        }
+        
+        
+
+        if (updatedComment === null){
             return res.status(500).json({error: "Internal server error"})
         }
     
