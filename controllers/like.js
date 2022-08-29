@@ -1,6 +1,4 @@
-const { json } = require('express');
-const paginate = require("express-paginate");
-const like = require('../repository/like');
+
 const {createLike, deleteLike, getAllLikeForOnePublication, getOneLikeByPostidAndUserid} = require('../repository/like');
 
 exports.addLike = async (req,res,next) => {

@@ -1,8 +1,8 @@
 const { resolve } = require('path');
 const conn = require('./mysql');
 
-module.exports = {
-    createLike: async like => {
+module.exports = (() => {
+    const createLike = async like => {
         return new Promise(resolve => {
             conn.query('INSERT INTO publications_like SET ?', [like], (err, results) => {
                 if (err){
@@ -11,8 +11,8 @@ module.exports = {
                 return resolve(results)
             })
         });
-    },
-    deleteLike: async (postid, userId) => {
+    }
+    const deleteLike= async (postid, userId) => {
         return new Promise(resolve => {
             conn.query('DELETE FROM publications_like WHERE postid = ? AND userId = ? LIMIT 1', [postid, userId], (err, results) => {
                 if (err){
@@ -21,8 +21,8 @@ module.exports = {
                 return resolve(results)
             })
         });
-    },
-    getAllLikeForOnePublication: async (postid) => {
+    }
+    const getAllLikeForOnePublication= async (postid) => {
         return new Promise (resolve => {
             conn.query('SELECT l.userId, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publications_like l JOIN `user` u ON l.userId = u.userId WHERE l.postid = ?',[postid], (err, results) => {
                 if (err){
@@ -31,8 +31,8 @@ module.exports = {
                 return resolve (results)
         })
     });
-    },
-    getOneLikeByPostidAndUserid: async (postid, userId) => {
+    }
+    const getOneLikeByPostidAndUserid = async (postid, userId) => {
         return new Promise (resolve => {
             conn.query('SELECT l.userId, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publications_like l JOIN `user` u ON l.userId = u.userId WHERE l.postid = ? AND l.userId = ? LIMIT 1', [postid, userId], (err, results) => {
                 if (err){
@@ -44,4 +44,5 @@ module.exports = {
             });
         })
     }
-};
+    return {createLike, deleteLike, getAllLikeForOnePublication, getOneLikeByPostidAndUserid}
+})()
