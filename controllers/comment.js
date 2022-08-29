@@ -26,13 +26,12 @@ exports.modifyComment = async (req, res) => {
         return res.status(400).json({error: 'Missing fields'})
       }
     
-    const comment = await getOneCommentByCommentId(req.params.id, req.auth.userId);
+    const comment = await getOneCommentByCommentId(req.params.id);
     
 
 
     if (comment) {
         const updated = {
-        commentid: req.params.id,
         content: req.body.textUpdate,
         };
 

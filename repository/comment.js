@@ -52,9 +52,9 @@ module.exports = (() => {
         })
     });
     }
-    const getOneCommentByCommentId= async (commentid, userId) => {
+    const getOneCommentByCommentId= async (commentid) => {
         return new Promise (resolve => {
-            conn.query('SELECT c.postid, c.commentid, c.content, c.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM comment c JOIN `user` u ON c.authorid = u.userId WHERE commentid = ? AND userId = ? LIMIT 1', [commentid, userId], (err, results) => {
+            conn.query('SELECT c.postid, c.commentid, c.content, c.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM comment c JOIN `user` u ON c.authorid = u.userId WHERE commentid = ? LIMIT 1', [commentid], (err, results) => {
                 if (err){
                     return resolve(null);
                 }

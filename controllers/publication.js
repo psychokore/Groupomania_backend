@@ -38,11 +38,13 @@ exports.modifyPublication = async (req, res) => {
     const admin = await findOneAdminById(req.auth.userId);
 
 
-    if (publication || admin) {
+    if (publication) {
         const updated = {
         content: req.body.textUpdate,
         imageurl: null
         };
+
+        let updatedPublication = null
 
         if (req.file) {
             if (publication.imageUrl){
@@ -51,10 +53,14 @@ exports.modifyPublication = async (req, res) => {
             }
         }
     
-        const updatedPublication = await updatePublication(updated, req.params.id, req.auth.userId)
-        const updatedPublicationByAdmin = await updatePublicationByAdmin(updated, req.params.id)
+        if (req.auth.isAdmin) {
+            updatedPublication = await updatePublicationByAdmin(updated, req.params.id)
+        } else {
+            updatedPublication = await updatePublication(updated, req.params.id, req.auth.userId)
+        }
         
-        if (updatedPublication === null || updatedPublicationByAdmin=== null){
+        
+        if (updatedPublication === null){
             return res.status(500).json({error: "Internal server error"})
         }
     
