@@ -56,5 +56,15 @@ module.exports = {
                 return resolve(null)
             });
         })
+    },
+    updateUserData: async (firstname, lastname, userId) => {
+        return new Promise(resolve => {
+            conn.query('UPDATE user SET firstname = ? lastname = ? WHERE userId = ? LIMIT 1', [firstname, lastname, userId], (err, results) => {
+                if (err){
+                    return resolve(null)
+                }
+                return resolve(results)
+            })
+        });
     }
     };
