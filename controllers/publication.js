@@ -35,7 +35,6 @@ exports.modifyPublication = async (req, res) => {
     } : { ...req.body };
 
     const publication = await getOnePublicationByPostId(req.params.id);
-    const admin = await findOneAdminById(req.auth.userId);
 
 
     if (publication) {
@@ -75,20 +74,25 @@ exports.modifyPublication = async (req, res) => {
 
 exports.deletePublication = async (req, res) => {
     const publication = await getOnePublicationByPostId(req.params.id);
-    const admin = await findOneAdminById(req.auth.userId);
+    
 
-    if (publication || admin) {
+    if (publication) {
         if (publication.imageUrl){
             const filename = publication.imageUrl.split('/images/')[1];
             fs.unlink(`images/${filename}`, () => {});
             }
     
-        const deletedPublication = await deletePublication(req.params.id, req.auth.userId);
-        const deletedPublicationByAdmin = await deletePublicationByAdmin(req.params.id)
-
-        if (deletedPublication === null || deletedPublicationByAdmin === null){
+        let deletedPublication = null
+        if (req.auth.isAdmin) {
+            deletedPublication = await deletePublicationByAdmin(req.params.id)
+        } else {
+            deletedPublication = await deletePublication(req.params.id, req.auth.userId);
+        }
+       
+        if (deletedPublication === null){
             return res.status(500).json({error: "Internal server error"})
         }
+        
         return res.status(200).json({message: 'Deleted post !'}) 
     };
     

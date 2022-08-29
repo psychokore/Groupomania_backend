@@ -58,15 +58,20 @@ exports.modifyComment = async (req, res) => {
 };
 
 exports.deleteComment = async (req, res) => {
-    const comment = await getOneCommentByCommentId(req.params.id, req.auth.userId);
-    const admin = await findOneAdminById(req.auth.userId);
+    const comment = await getOneCommentByCommentId(req.params.id);
+    
 
-    if (comment || admin) {
+    if (comment) {
 
-        const deletedComment = await deleteComment(req.params.id, req.auth.userId);
-        const deletedCommentByAdmin = await deleteCommentByAdmin(req.params.id);
+        let deletedComment = null
 
-        if (deletedComment === null || deletedCommentByAdmin === null){
+        if(req.auth.isAdmin) {
+            deletedComment = await deleteCommentByAdmin(req.params.id);
+        } else {
+            deletedComment = await deleteComment(req.params.id, req.auth.userId);
+        }
+ 
+        if (deletedComment === null){
             return res.status(500).json({error: "Internal server error"})
         }
         return res.status(200).json({message: 'Deleted comment !'})
@@ -75,9 +80,6 @@ exports.deleteComment = async (req, res) => {
     return res.status(404).json({
         error: 'Ressource not found'
     });
-    
-    
-
 
 };
 
