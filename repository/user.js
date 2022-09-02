@@ -57,11 +57,11 @@ module.exports = {
             });
         })
     },
-    updateUserData: async (firstname, lastname, userId) => {
+    updateUserData: async (user, userId) => {
         return new Promise(resolve => {
-            conn.query('UPDATE user SET firstname = ? lastname = ? WHERE userId = ? LIMIT 1', [firstname, lastname, userId], (err, results) => {
+            conn.query('UPDATE user SET ? WHERE userId = ? LIMIT 1', [user, userId], (err, results) => {
                 if (err){
-                    return resolve(null)
+                    return console.log(err)
                 }
                 return resolve(results)
             })

@@ -116,8 +116,13 @@ exports.updateUserData = async (req,res) => {
     if (!testLastName){
         return res.status(400).json({error:'Veuillez saisir un nom valide'})
     }
+
+    const user = {
+        firstname: req.body.firstname,
+        lastname: req.body.lastname
+    }
     
-    const updatedProfil = await updateUserData(req.body.firstname, req.body.lastname, req.auth.userId)
+    const updatedProfil = await updateUserData(user, req.auth.userId)
     if (updatedProfil === null){
         return res.status(500).json({error: "Internal server error"})
     }
