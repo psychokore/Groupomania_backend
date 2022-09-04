@@ -4,11 +4,11 @@ const conn = require('./mysql');
 module.exports = (() => {
     const createLike = async like => {
         return new Promise(resolve => {
-            conn.query('INSERT INTO publications_like SET ?', [like], (err, results) => {
+            conn.query('INSERT INTO publications_like SET ?', [like], async (err, results) => {
                 if (err){
                     return resolve(null);
                 }
-                return resolve(results)
+                return resolve(await getOneLikeByPostidAndUserid(like.postid, like.userId))
             })
         });
     }

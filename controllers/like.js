@@ -16,7 +16,7 @@ exports.addLike = async (req,res,next) => {
         if (newLike === null){
             return res.status(500).json({error: "Internal server error"})
         }
-        return res.status(201).json({message: 'Liked !'}) 
+        return res.status(201).json(newLike) 
     }
 };
 
