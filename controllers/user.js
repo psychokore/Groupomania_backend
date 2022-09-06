@@ -70,7 +70,7 @@ exports.login = async (req, res, next) => {
                 token: jwt.sign(
                     { userId: user.userId, isAdmin: user.admin === 1},
                     process.env.JWTOKEN,
-                    { expiresIn: '30s'}
+                    { expiresIn: '1h'}
                 )
             });
         })
@@ -83,7 +83,7 @@ res.status(200).json({
     token: jwt.sign(
         { userId: req.auth.userId, isAdmin: req.auth.isAdmin},
         process.env.JWTOKEN,
-        { expiresIn: '30s'}
+        { expiresIn: '1h'}
     ),
     isAdmin: req.auth.isAdmin
     
