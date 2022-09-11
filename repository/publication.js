@@ -18,7 +18,7 @@ module.exports = (() => {
     }
     const getOnePublicationByPostId = async (postid) => {
         return new Promise (resolve => {
-            conn.query('SELECT p.postid, p.content, p.imageurl, p.create_at, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publication p JOIN `user` u ON p.authorid = u.userId WHERE postid = ? LIMIT 1', [postid], (err, results) => {
+            conn.query('SELECT p.postid, p.content, p.imageurl, p.create_at, p.authorid, CONCAT (u.firstname," ", u.lastname) AS authorpseudo FROM publication p JOIN `user` u ON p.authorid = u.userId WHERE postid = ? LIMIT 1', [postid], (err, results) => {
                 if (err){
                     return resolve(null);
                 }
@@ -30,11 +30,11 @@ module.exports = (() => {
     }
     const updatePublication= async (updated, postid, userId) => {
         return new Promise(resolve => {
-            conn.query('UPDATE publication SET ? WHERE postid = ? AND authorid = ? LIMIT 1', [updated, postid, userId], (err, results) => {
+            conn.query('UPDATE publication SET ? WHERE postid = ? AND authorid = ? LIMIT 1', [updated, postid, userId],  async (err) => {
                 if (err){
                     return resolve(null);
                 }
-                return resolve(results)
+                return resolve(await getOnePublicationByPostId(postid, userId))
             })
         });
     }

@@ -28,11 +28,7 @@ exports.publish = async (req,res,next) => {
 };
 
 exports.modifyPublication = async (req, res) => {
-    const publicationObject = req.file ?
-    {
-      ...JSON.parse(req.body.publication),
-      imageurl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    } : { ...req.body };
+
 
     const publication = await getOnePublicationByPostId(req.params.id);
 
@@ -47,10 +43,13 @@ exports.modifyPublication = async (req, res) => {
 
         if (req.file) {
             if (publication.imageUrl){
-            const filename = publication.imageUrl.split('/images/')[1];
-            fs.unlink(`images/${filename}`, () => {});
+                const filename = publication.imageUrl.split('/images/')[1];
+                fs.unlink(`images/${filename}`, () => {});
             }
+            updated.imageurl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+         
         }
+         
     
         if (req.auth.isAdmin) {
             updatedPublication = await updatePublicationByAdmin(updated, req.params.id)
@@ -63,7 +62,7 @@ exports.modifyPublication = async (req, res) => {
             return res.status(500).json({error: "Internal server error"})
         }
     
-        return res.status(201).json({message: 'Updated post !'})
+        return res.status(201).json(updatedPublication)
     };
     
     return res.status(404).json({
