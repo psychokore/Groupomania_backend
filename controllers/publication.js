@@ -1,24 +1,20 @@
-const { json } = require('express');
-const paginate = require("express-paginate");
 const fs = require('fs');
-const publication = require('../repository/publication');
-const {createPublication, getOnePublicationByPostId, deletePublication, updatePublication, getAllPublicationsPaginated, getCount} = require('../repository/publication');
+const {createPublication, getOnePublicationByPostId, deletePublication, updatePublication, getAllPublicationsPaginated, getCount, updatePublicationByAdmin, deletePublicationByAdmin} = require('../repository/publication');
+const { findOneAdminById } = require('../repository/user');
 
 exports.publish = async (req,res,next) => {
-    if (!req.body.publication){
+    if (!req.body.content){
         return res.status(400).json({error: 'Missing fields'})
       }
-    const publicationObject = JSON.parse(req.body.publication);
-    if (!publicationObject.content){
-        return res.status(400).json({error: 'Missing fields'})
-      }
+    
+
     const publication = {
         authorid: req.auth.userId,
-        content: publicationObject.content,
+        content: req.body.content,
         imageurl: null,
         create_at: new Date()
     };  
-    if (req.file?.filename){
+    if (req.file){
         publication.imageurl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     }
     
@@ -32,58 +28,76 @@ exports.publish = async (req,res,next) => {
 };
 
 exports.modifyPublication = async (req, res) => {
-    const publicationObject = req.file ?
-    {
-      ...JSON.parse(req.body.publication),
-      imageurl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    } : { ...req.body };
 
-    const publication = await getOnePublicationByPostId(req.params.id, req.auth.userId);
-    if (!publication) {
-        return res.status(404).json({
-            error: 'Ressource not found'
-        })
-    };
-    const updated = {
-        postid: req.params.id,
-        content: publicationObject.content,
+
+    const publication = await getOnePublicationByPostId(req.params.id);
+
+
+    if (publication) {
+        const updated = {
+        content: req.body.textUpdate,
         imageurl: null
-    };
-    if (req.file) {
-        if (publication.imageUrl){
-        const filename = publication.imageUrl.split('/images/')[1];
-        fs.unlink(`images/${filename}`, () => {});
+        };
+
+        let updatedPublication = null
+
+        if (req.file) {
+            if (publication.imageUrl){
+                const filename = publication.imageUrl.split('/images/')[1];
+                fs.unlink(`images/${filename}`, () => {});
+            }
+            updated.imageurl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+         
         }
-    }
+         
     
-    const updatedPublication = await updatePublication(updated)
-    if (updatedPublication === null){
-        return res.status(500).json({error: "Internal server error"})
-    }
+        if (req.auth.isAdmin) {
+            updatedPublication = await updatePublicationByAdmin(updated, req.params.id)
+        } else {
+            updatedPublication = await updatePublication(updated, req.params.id, req.auth.userId)
+        }
+        
+        
+        if (updatedPublication === null){
+            return res.status(500).json({error: "Internal server error"})
+        }
     
-    return res.status(201).json({message: 'Updated post !'})
+        return res.status(201).json(updatedPublication)
+    };
     
+    return res.status(404).json({
+            error: 'Ressource not found'
+    })
 
 };
 
 exports.deletePublication = async (req, res) => {
-    const publication = await getOnePublicationByPostId(req.params.id, req.auth.userId);
-    if (!publication) {
-        return res.status(404).json({
-            error: 'Ressource not found'
-        })
-    };
-    if (publication.imageUrl){
-        const filename = publication.imageUrl.split('/images/')[1];
-        fs.unlink(`images/${filename}`, () => {});
+    const publication = await getOnePublicationByPostId(req.params.id);
+    
+
+    if (publication) {
+        if (publication.imageUrl){
+            const filename = publication.imageUrl.split('/images/')[1];
+            fs.unlink(`images/${filename}`, () => {});
+            }
+    
+        let deletedPublication = null
+        if (req.auth.isAdmin) {
+            deletedPublication = await deletePublicationByAdmin(req.params.id)
+        } else {
+            deletedPublication = await deletePublication(req.params.id, req.auth.userId);
+        }
+       
+        if (deletedPublication === null){
+            return res.status(500).json({error: "Internal server error"})
+        }
+        
+        return res.status(200).json({message: 'Deleted post !'}) 
     };
     
-    const deletedPublication = await deletePublication(req.params.id, req.auth.userId);
-    if (deletedPublication === null){
-        return res.status(500).json({error: "Internal server error"})
-    }
-    return res.status(200).json({message: 'Deleted post !'})
-
+    return res.status(404).json({
+            error: 'Ressource not found'
+        })
 
 };
 

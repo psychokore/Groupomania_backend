@@ -1,7 +1,4 @@
-const { json } = require('express');
-const paginate = require("express-paginate");
-const comment = require('../repository/comment');
-const {createComment, updateComment, deleteComment, getAllCommentsPaginated, getCount, getOneCommentByCommentId} = require('../repository/comment');
+const { createComment, updateComment, deleteComment, getAllCommentsPaginated, getCount, getOneCommentByCommentId, deleteCommentByAdmin, updateCommentByAdmin } = require('../repository/comment'); 
 
 exports.publish = async (req,res,next) => {
     if (!req.body.comment){
@@ -25,45 +22,64 @@ exports.publish = async (req,res,next) => {
 };
 
 exports.modifyComment = async (req, res) => {
-    if (!req.body.comment){
+    if (!req.body.textUpdate){
         return res.status(400).json({error: 'Missing fields'})
       }
     
-    const comment = await getOneCommentByCommentId(req.params.id, req.auth.userId);
-    if (!comment) {
-        return res.status(404).json({
+    const comment = await getOneCommentByCommentId(req.params.id);
+    
+
+
+    if (comment) {
+        const updated = {
+        content: req.body.textUpdate,
+        };
+
+        let updatedComment = null
+        if (req.auth.isAdmin) {
+            updatedComment = await updateCommentByAdmin(updated, req.params.id) 
+        } else {
+            updatedComment = await updateComment(updated, req.params.id, req.auth.userId )
+        }
+        
+        
+
+        if (updatedComment === null){
+            return res.status(500).json({error: "Internal server error"})
+        }
+    
+        return res.status(201).json({message: 'Updated comment !'})
+        };
+    
+    return res.status(404).json({
             error: 'Ressource not found'
         })
-    };
-    const updated = {
-        commentid: req.params.id,
-        content: req.body.comment,
-    };
-    
-    const updatedComment = await updateComment(updated)
-    if (updatedComment === null){
-        return res.status(500).json({error: "Internal server error"})
-    }
-    
-    return res.status(201).json({message: 'Updated comment !'})
-    
 
 };
 
 exports.deleteComment = async (req, res) => {
-    const comment = await getOneCommentByCommentId(req.params.id, req.auth.userId);
-    if (!comment) {
-        return res.status(404).json({
-            error: 'Ressource not found'
-        })
-    };
+    const comment = await getOneCommentByCommentId(req.params.id);
     
-    const deletedComment = await deleteComment(req.params.id, req.auth.userId);
-    if (deletedComment === null){
-        return res.status(500).json({error: "Internal server error"})
-    }
-    return res.status(200).json({message: 'Deleted comment !'})
 
+    if (comment) {
+
+        let deletedComment = null
+
+        if(req.auth.isAdmin) {
+            deletedComment = await deleteCommentByAdmin(req.params.id);
+        } else {
+            deletedComment = await deleteComment(req.params.id, req.auth.userId);
+        }
+ 
+        if (deletedComment === null){
+            return res.status(500).json({error: "Internal server error"})
+        }
+        return res.status(200).json({message: 'Deleted comment !'})
+    }
+
+    return res.status(404).json({
+        error: 'Ressource not found'
+    });
 
 };
 

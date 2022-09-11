@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cryptojs = require('crypto-js');
-const {findOneUserByMail, createUser} = require('../repository/user');
+const {findOneUserByMail, createUser, findOneUserById, deleteUser, updateUserData} = require('../repository/user');
 
 
 
@@ -36,12 +36,12 @@ exports.signup = async (req,res,next) => {
         password: password
     }
 
-    //console.log(user);
+    
     const newUser = await createUser(user);
     if (newUser === null){
-        return res.status(500).json({error: "Internal server eroor"})
+        return res.status(500).json({error: "Internal server error"})
     }
-    //console.log(newUser);
+    
     return res.status(201).json({message: 'Utilisateur créé'})
 
 }
@@ -81,9 +81,53 @@ exports.refresh = (req, res) => {
 res.status(200).json({
     userId: req.auth.userId,
     token: jwt.sign(
-        { userId: req.auth.userId},
+        { userId: req.auth.userId, isAdmin: req.auth.isAdmin},
         process.env.JWTOKEN,
         { expiresIn: '1h'}
-    )
+    ),
+    isAdmin: req.auth.isAdmin
+    
 });
+}
+
+exports.getUserData = async (req, res) => {
+    const userData = await findOneUserById(req.auth.userId);
+    return res.status(200).json({data: userData});
+
+}
+
+exports.deleteAccount = async (req, res) => {
+    const deleted = await deleteUser(req.auth.userId)
+    return res.status(200).json({message: 'Account deleted'})
+}
+
+
+exports.updateUserData = async (req,res) => {
+    if (!req.body.firstname || !req.body.lastname){
+        return res.status(400).json({error: 'Missing fields'})
+      }
+
+
+    let firstNameRegExp = new RegExp('^[A-Za-z éèëôîï-]+$', 'g');
+    let testFirstName = firstNameRegExp.test(req.body.firstname);
+    if (!testFirstName){
+        return res.status(400).json({error:'Veuillez saisir un prénom valide'})
+    }  
+    let lastNameRegExp = new RegExp('^[A-Za-z éèëôîï-]+$', 'g');
+    let testLastName = lastNameRegExp.test(req.body.lastname);
+    if (!testLastName){
+        return res.status(400).json({error:'Veuillez saisir un nom valide'})
+    }
+
+    const user = {
+        firstname: req.body.firstname,
+        lastname: req.body.lastname
+    }
+    
+    const updatedProfil = await updateUserData(user, req.auth.userId)
+    if (updatedProfil === null){
+        return res.status(500).json({error: "Internal server error"})
+    }
+    
+    return res.status(201).json({message: 'updated profil'})
 }

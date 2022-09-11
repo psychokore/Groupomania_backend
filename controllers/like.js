@@ -1,6 +1,4 @@
-const { json } = require('express');
-const paginate = require("express-paginate");
-const like = require('../repository/like');
+
 const {createLike, deleteLike, getAllLikeForOnePublication, getOneLikeByPostidAndUserid} = require('../repository/like');
 
 exports.addLike = async (req,res,next) => {
@@ -9,13 +7,17 @@ exports.addLike = async (req,res,next) => {
         postid: req.params.id,
     };  
     
-    const newLike = await createLike(like);
-
-    if (newLike === null){
-        return res.status(500).json({error: "Internal server error"})
+    const alreadyLike = await getOneLikeByPostidAndUserid(req.params.id, req.auth.userId)
+    if (alreadyLike) {
+        return res.status(403).json({message: 'Post already liked'})
     }
-    
-    return res.status(201).json({message: 'Liked !'})
+    else {
+        const newLike = await createLike(like);
+        if (newLike === null){
+            return res.status(500).json({error: "Internal server error"})
+        }
+        return res.status(201).json(newLike) 
+    }
 };
 
 exports.deleteLike = async (req, res) => {
@@ -35,5 +37,6 @@ exports.deleteLike = async (req, res) => {
 
 exports.getAllLikes = async (req, res) => {
     const allLikes = await getAllLikeForOnePublication (req.params.id);
-    return res.status(200).json(allLikes)
+    return res.status(200).json({data: allLikes})
+    
 }
