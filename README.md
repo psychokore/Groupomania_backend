@@ -3,25 +3,25 @@
 1. Installation du projet
 
 
-Dans la sonsole, saisir npm install
+      Dans la console, saisir npm install
 
 
 2. Lancement du projet
 
-Dans la console, saisir la commande: node server
+      Dans la console, saisir la commande: node server
 
 
-Ajouter un fichier .env comprenant les variables suivantes:
+      Ajouter un fichier .env comprenant les variables suivantes:
 
-JWTTOKEN
+            JWTTOKEN
 
-MYSQL_HOST
+            MYSQL_HOST
 
-MYSQL_USER
+            MYSQL_USER
 
-PASSWORD
+            PASSWORD
 
-DATABASE
+            DATABASE
 
-PORT
+            PORT
       
