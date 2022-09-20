@@ -1,6 +1,11 @@
 # Groupomania_backend
 
-CONGIFURATION DU BACK
+1. Installation du projet
+Dans la sonsole, saisir npm install
+
+
+2. Lancement du projet
+
 Dans la console, saisir la commande: node server
 
 
